@@ -1,10 +1,9 @@
-package com.samueljbeck.savetopreferences
+package com.samueljbeck.utilities.savetopreferences
 
 import android.content.Context
 
-
-/**=
- * Created by miguele on 4/25/16.
+/*
+ * Created by Sam Beck on 10/5/2018
  */
 class PreferenceSave {
     companion object {

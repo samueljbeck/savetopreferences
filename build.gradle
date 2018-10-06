@@ -4,6 +4,12 @@ apply plugin: 'kotlin-android'
 
 apply plugin: 'maven'
 
+
+
+//maven code
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
+
 buildscript {
     ext.kotlin_version = '1.2.50'
 
@@ -13,7 +19,11 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.1.4'
-        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.51'
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.71'
+
+        //maven code
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
     }
 
 }
@@ -22,6 +32,7 @@ buildscript {
 repositories {
     jcenter()
     google()
+    mavenCentral()
 
 }
 
@@ -57,6 +68,113 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
-repositories {
-    mavenCentral()
+
+
+
+//maven code
+ext {
+    bintrayRepo = 'utilities'
+    bintrayName = 'savetopreferences'
+
+    publishedGroupId = 'com.samueljbeck.utilities'
+    libraryName = 'savetopreferences'
+    artifact = 'savetopreferences'
+
+    libraryDescription = 'Simple Library for adding and removing values from preferences'
+
+    siteUrl = 'https://github.com/samueljbeck/savetopreferences'
+    gitUrl = 'https://github.com/samueljbeck/savetopreferences.git'
+
+    libraryVersion = '0.0.1'
+
+    developerId = 'samueljbeck'
+    developerName = 'Samuel Beck'
+    developerEmail = 'samueljbeck@gmail.com'
+
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
 }
+
+group = publishedGroupId
+version = libraryVersion
+
+install {
+    repositories.mavenInstaller {
+        pom.project {
+            packaging 'aar'
+            groupId publishedGroupId
+            artifactId artifact
+
+            name libraryName
+            description libraryDescription
+            url siteUrl
+
+            licenses {
+                license {
+                    name licenseName
+                    url licenseUrl
+                }
+            }
+            developers {
+                developer {
+                    id developerId
+                    name developerName
+                    email developerEmail
+                }
+            }
+            scm {
+                connection gitUrl
+                developerConnection gitUrl
+                url siteUrl
+            }
+        }
+    }
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java.srcDirs
+}
+
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
+
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+bintray {
+    user = properties.getProperty("bintray.user")
+    key = properties.getProperty("bintray.apikey")
+
+    configurations = ['archives']
+    pkg {
+        repo = bintrayRepo
+        name = bintrayName
+        desc = libraryDescription
+        websiteUrl = siteUrl
+        vcsUrl = gitUrl
+        licenses = allLicenses
+        dryRun = false
+        publish = true
+        override = false
+        publicDownloadNumbers = true
+        version {
+            desc = libraryDescription
+        }
+    }
+}
+
+

@@ -142,11 +142,15 @@ task javadoc(type: Javadoc) {
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
 }
 
+
+
 task javadocJar(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
     from javadoc.destinationDir
 }
-
+tasks.withType(Javadoc) {
+        enabled = false
+    }
 artifacts {
     archives javadocJar
     archives sourcesJar

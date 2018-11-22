@@ -32,7 +32,7 @@ class PreferenceSave {
             editor.apply()
         }
 
-        operator fun get(context: Context, key: String): String {
+        operator fun get(context: Context, key: String): String? {
 
             val sharedPreferences = context.getSharedPreferences(
                     TOP_KEY + key,
@@ -42,7 +42,7 @@ class PreferenceSave {
 
         fun getIfContains(context: Context, key: String, value: String): String {
             return if (contains(context, key)) {
-                get(context, key)
+                get(context, key)!!
             } else {
                 value
             }
